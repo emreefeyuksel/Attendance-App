@@ -2,6 +2,7 @@
 // No server required. Supports cross-device attendance via a daily shared seed.
 
 const APP_KEY = 'attendance_app_v1';
+const APP_VERSION = '2';
 
 const defaultState = {
     users: {
@@ -26,15 +27,16 @@ function loadState(){
         if(!raw){
             // initialize with a shared seed derived from a constant plus date to avoid guessing
             const seed = generateSeed();
-            const init = { ...defaultState, codeSeed: seed };
+            const init = { ...defaultState, codeSeed: seed, version: APP_VERSION };
             localStorage.setItem(APP_KEY, JSON.stringify(init));
             return init;
         }
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        return parsed;
     } catch(err){
         console.error('Failed to parse state', err);
         localStorage.removeItem(APP_KEY);
-        return { ...defaultState, codeSeed: generateSeed() };
+        return { ...defaultState, codeSeed: generateSeed(), version: APP_VERSION };
     }
 }
 
@@ -43,6 +45,12 @@ function saveState(mut){
 }
 
 let state = loadState();
+
+// Migration: if version mismatch, reset and load roster
+if(state.version !== APP_VERSION){
+    state = { ...defaultState, codeSeed: state.codeSeed || generateSeed(), version: APP_VERSION };
+    saveState(state);
+}
 
 // Populate real roster once
 if(state.rosterVersion !== 'v1'){
@@ -217,6 +225,9 @@ function renderLogin(app){
             alert('Unknown student number');
         }
     };
+    // For quick testing, preload first number on focus
+    const firstNum = Object.keys(state.users.students)[0];
+    if(firstNum) document.getElementById('s-number').placeholder = firstNum;
 }
 
 function renderCoursePick(app){
