@@ -7,12 +7,8 @@ const defaultState = {
     users: {
         // instructor mock
         instructor: { username: 'Orkun Karabasoglu', password: '123456', role: 'instructor' },
-        // mock students by studentNumber
-        students: {
-            '18070000013': { number: '18070000013', firstName: 'IBRAHIM', lastName: 'GÜLTEKIN', department: 'İNŞAAT MÜHENDİSLİĞİ' },
-            '19070001053': { number: '19070001053', firstName: 'ELİF EMİNE', lastName: 'GÜNAL', department: 'BİLGİSAYAR MÜHENDİSLİĞİ' },
-            '19070008012': { number: '19070008012', firstName: 'ERK YANKI', lastName: 'ÖZVAN', department: 'MAKİNE MÜHENDİSLİĞİ' },
-        }
+        // students by studentNumber
+        students: {}
     },
     course: { id: 'ENGR4451', name: 'ENGR 4451', totalWeeks: 14 },
     // attendance[studentNumber][week] = timestamp
@@ -20,7 +16,8 @@ const defaultState = {
     // also store code seed to allow any device to validate the rotating code
     codeSeed: null,
     // current session user
-    session: null
+    session: null,
+    rosterVersion: null
 };
 
 function loadState(){
@@ -46,6 +43,57 @@ function saveState(mut){
 }
 
 let state = loadState();
+
+// Populate real roster once
+if(state.rosterVersion !== 'v1'){
+    const roster = [
+        { number:'18070003013', fullName:'İBRAHİM GÜLTEKİN', department:'İNŞAAT MÜHENDİSLİĞİ' },
+        { number:'19070001053', fullName:'ELİF EMİNE GÜNAL', department:'BİLGİSAYAR MÜHENDİSLİĞİ' },
+        { number:'19070008012', fullName:'ERK YANKI URAL', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'20070001057', fullName:'ERCE ÖZKAN', department:'BİLGİSAYAR MÜHENDİSLİĞİ' },
+        { number:'20070002048', fullName:'İPEK ATIŞ', department:'ENDÜSTRİ MÜHENDİSLİĞİ' },
+        { number:'20070007004', fullName:'İDİL ECE CEVAHİR', department:'ENERJİ SİSTEMLERİ MÜHENDİSLİĞİ' },
+        { number:'20070008016', fullName:'SUDE ONFİDAN', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'20070008017', fullName:'ÖMER ARICA', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'20070008019', fullName:'SELİM MERT KIRCAALİLİ', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'20070008029', fullName:'BERİL DERAN GÜRBÜZ', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'21070001004', fullName:'ALİ HAKTAN SIĞIN', department:'BİLGİSAYAR MÜHENDİSLİĞİ' },
+        { number:'21070001051', fullName:'ARDA ALTUNHAN', department:'BİLGİSAYAR MÜHENDİSLİĞİ' },
+        { number:'21070001070', fullName:'EKREM TEMEL', department:'BİLGİSAYAR MÜHENDİSLİĞİ' },
+        { number:'21070002005', fullName:'NESRİN ŞENTÜRK', department:'ENDÜSTRİ MÜHENDİSLİĞİ' },
+        { number:'21070002025', fullName:'BATUHAN ŞİŞMAN', department:'ENDÜSTRİ MÜHENDİSLİĞİ' },
+        { number:'21070005027', fullName:'KIVANÇ EFE ERGÖNÜL', department:'ELEKTRİK-ELEKTRONİK MÜHENDİSLİĞİ' },
+        { number:'21070005030', fullName:'OĞUZ KOYUCAN', department:'ELEKTRİK-ELEKTRONİK MÜHENDİSLİĞİ' },
+        { number:'21070005042', fullName:'ZEYNEP ARSLANBUĞA', department:'ELEKTRİK-ELEKTRONİK MÜHENDİSLİĞİ' },
+        { number:'21070007001', fullName:'BESTE TEKİN', department:'ENERJİ SİSTEMLERİ MÜHENDİSLİĞİ' },
+        { number:'21070007004', fullName:'EKİN ALTUNKAYA', department:'ENERJİ SİSTEMLERİ MÜHENDİSLİĞİ' },
+        { number:'21070008009', fullName:'EMRE ERİŞİR', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'21070008014', fullName:'İSMAİL CANBERK DEMİRKAN', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'21070008016', fullName:'CAN GİRGİN', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'21070008017', fullName:'KEREM EROĞLU', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'21070008027', fullName:'ARMAĞAN SOYLU', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'21070008033', fullName:'ALP SERKAN MERKİT', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'21070008034', fullName:'ATAKAN DİNÇER', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'21070008206', fullName:'DEMET BÜYÜKTAŞ', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'22070001041', fullName:'GÜRKAN EROĞLU', department:'BİLGİSAYAR MÜHENDİSLİĞİ' },
+        { number:'22070001055', fullName:'EMRE EFE YÜKSEL', department:'BİLGİSAYAR MÜHENDİSLİĞİ' },
+        { number:'22070002015', fullName:'SÜLEYMAN BATU SARI', department:'ENDÜSTRİ MÜHENDİSLİĞİ' },
+        { number:'22070002047', fullName:'KADİR EMRE GÜNEŞ', department:'ENDÜSTRİ MÜHENDİSLİĞİ' },
+        { number:'22070005040', fullName:'TOPRAK TUNCER', department:'ELEKTRİK-ELEKTRONİK MÜHENDİSLİĞİ' },
+        { number:'22070005053', fullName:'EMRE CAN HEKİMOĞLU', department:'ELEKTRİK-ELEKTRONİK MÜHENDİSLİĞİ' },
+        { number:'22070007014', fullName:'ILGAR ŞENOL', department:'ENERJİ SİSTEMLERİ MÜHENDİSLİĞİ' },
+        { number:'22070008017', fullName:'EDA NUR ÇALIŞKAN', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'22070008021', fullName:'SAMİ BERK ŞAHİN', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'22070008026', fullName:'DENİZ ÜNVER', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'22070008034', fullName:'AYKAN KANLI', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'22070008043', fullName:'DENİZ KARATEPE', department:'MAKİNE MÜHENDİSLİĞİ' },
+        { number:'22070003022', fullName:'AYŞEGÜL KARINYARICI', department:'İNŞAAT MÜHENDİSLİĞİ' },
+        { number:'21070001046', fullName:'AHMET ÖZGÜR KORKMAZ', department:'BİLGİSAYAR MÜHENDİSLİĞİ' },
+    ];
+    state.users.students = Object.fromEntries(roster.map(s=> [s.number, s]));
+    state.rosterVersion = 'v1';
+    saveState(state);
+}
 
 // Deterministic seed that all devices can share. Instructor can rotate it from UI if desired.
 function generateSeed(){
@@ -142,7 +190,7 @@ function renderLogin(app){
             <input id="s-number" placeholder="e.g., 18070000013" />
             <div class="spacer"></div>
             <button id="s-login">Login</button>
-            <p class="muted" style="margin-top:10px">Demo students: 18070000013, 19070001053, 19070008012</p>
+            <p class="muted" style="margin-top:10px">Sample numbers: ${Object.keys(state.users.students).slice(0,3).join(', ')}</p>
         </section>
     </div>`;
 
@@ -213,7 +261,7 @@ function renderInstructor(app){
 
     app.innerHTML = `
     <section class="card">
-        <h2>Instructor Panel - ${state.course.name}</h2>
+        <div class="hero"><h2>Instructor Panel - ${state.course.name}</h2><span class="badge">Total ${Object.keys(state.users.students).length} students</span></div>
         <div class="grid cols-2">
             <div>
                 <label>Week</label>
@@ -235,7 +283,7 @@ function renderInstructor(app){
                     <button id="clear-att" class="danger">Clear Attendance</button>
                 </div>
                 <div class="spacer"></div>
-                <div class="muted">Total students: ${Object.keys(state.users.students).length}</div>
+                <div class="muted">Export creates a sheet similar to your sample format.</div>
             </div>
         </div>
     </section>
@@ -275,14 +323,14 @@ function renderInstructor(app){
     function renderTable(){
         const table = document.getElementById('att-table');
         const weeksHeader = Array.from({length: state.course.totalWeeks}, (_,i)=> `<th>${i+1}. Hafta</th>`).join('');
-        const rows = Object.values(state.users.students).map(s=>{
+            const rows = Object.values(state.users.students).map(s=>{
             const att = getStudentAttendance(s.number);
             const cells = Array.from({length: state.course.totalWeeks}, (_,i)=>{
                 const w = (i+1).toString();
                 const present = !!att[w];
                 return `<td>${present ? '✔️' : ''}</td>`;
             }).join('');
-            return `<tr><td>${s.number}</td><td>${s.firstName} ${s.lastName}</td><td>${s.department}</td>${cells}</tr>`;
+            return `<tr><td>${s.number}</td><td>${s.fullName}</td><td>${s.department}</td>${cells}</tr>`;
         }).join('');
         table.innerHTML = `
             <thead>
@@ -303,7 +351,8 @@ function exportExcel(){
     let idx = 1;
     for(const s of Object.values(state.users.students)){
         const att = getStudentAttendance(s.number);
-        const row = [idx++, s.number, s.firstName, s.lastName, s.department];
+        const [firsts, last] = splitFullName(s.fullName);
+        const row = [idx++, s.number, firsts, last, s.department];
         for(let w=1; w<=totalWeeks; w++) row.push(att[w] ? '1' : '');
         data.push(row);
     }
@@ -323,7 +372,7 @@ function renderStudent(app){
 
     app.innerHTML = `
     <section class="card">
-        <h2>Welcome, ${student.firstName} ${student.lastName}</h2>
+        <div class="hero"><h2>Welcome, ${student.fullName}</h2><span class="badge">${student.number}</span></div>
         <div class="grid cols-2">
             <div>
                 <label>Select Week</label>
@@ -366,6 +415,13 @@ function renderStudent(app){
             alert('Invalid or expired code.');
         }
     };
+}
+
+function splitFullName(fullName){
+    const parts = fullName.trim().split(/\s+/);
+    if(parts.length === 1) return [parts[0], ''];
+    const last = parts.pop();
+    return [parts.join(' '), last];
 }
 
 
