@@ -29,6 +29,16 @@ button.danger{ background: linear-gradient(180deg, #ff7b86, #ff4d5e); }
 .table{ width:100%; border-collapse: collapse; }
 .table th,.table td{ border-bottom:1px solid #233058; padding:12px; text-align:left; }
 .table th{ position:sticky; top:0; background: var(--panel); z-index:1; }
+.table.compact th,.table.compact td{ padding:8px 10px; font-size:13px; }
+.scroll-x{ overflow:auto; border-radius:12px; border:1px solid #1f2b4a; }
+.freeze-left{ position: sticky; left: 0; z-index: 2; background: var(--panel); }
+.freeze-left-2{ position: sticky; left: 160px; z-index: 2; background: var(--panel); }
+.freeze-left-3{ position: sticky; left: 380px; z-index: 2; background: var(--panel); }
+.row.hoverable tr:hover td{ background: rgba(91,140,255,.06); }
+.dot{ width:10px; height:10px; border-radius:50%; display:inline-block; background:#2a3a64; }
+.dot.present{ background: var(--ok); box-shadow: 0 0 0 2px rgba(57,217,138,.25); }
+.toolbar{ display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.input-inline{ max-width:260px; }
 .pill{ display:inline-block; padding:4px 8px; border-radius:999px; background:#0f1730; border:1px solid #2a3a64; }
 .badge{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#0f1730; border:1px solid #2a3a64; }
 .success{ color: var(--ok); }

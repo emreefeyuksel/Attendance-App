@@ -299,8 +299,13 @@ function renderInstructor(app){
         </div>
     </section>
     <section class="card" style="margin-top:16px;">
-        <h3>Attendance Records</h3>
-        <table class="table" id="att-table"></table>
+        <div class="toolbar">
+            <h3 style="margin:0">Attendance Records</h3>
+            <input id="search" class="input-inline" placeholder="Search name or number" />
+        </div>
+        <div class="scroll-x">
+            <table class="table compact row hoverable" id="att-table"></table>
+        </div>
     </section>`;
 
     const weekSelect = document.getElementById('week-select');
@@ -333,19 +338,34 @@ function renderInstructor(app){
 
     function renderTable(){
         const table = document.getElementById('att-table');
-        const weeksHeader = Array.from({length: state.course.totalWeeks}, (_,i)=> `<th>${i+1}. Hafta</th>`).join('');
-            const rows = Object.values(state.users.students).map(s=>{
+        const weeksHeader = Array.from({length: state.course.totalWeeks}, (_,i)=> `<th>${i+1}</th>`).join('') + '<th>Toplam</th><th>%</th>';
+        const q = (document.getElementById('search').value || '').toLowerCase();
+        const list = Object.values(state.users.students).filter(s=>{
+            const hay = `${s.number} ${s.fullName}`.toLowerCase();
+            return hay.includes(q);
+        });
+        const rows = list.map(s=>{
             const att = getStudentAttendance(s.number);
+            let total = 0;
             const cells = Array.from({length: state.course.totalWeeks}, (_,i)=>{
                 const w = (i+1).toString();
                 const present = !!att[w];
-                return `<td>${present ? '✔️' : ''}</td>`;
+                if(present) total++;
+                return `<td><span class="dot ${present?'present':''}"></span></td>`;
             }).join('');
-            return `<tr><td>${s.number}</td><td>${s.fullName}</td><td>${s.department}</td>${cells}</tr>`;
+            const pct = Math.round((total / state.course.totalWeeks) * 100);
+            return `<tr>
+                <td class="freeze-left">${s.number}</td>
+                <td class="freeze-left-2">${s.fullName}</td>
+                <td class="freeze-left-3">${s.department}</td>
+                ${cells}
+                <td>${total}</td>
+                <td>${pct}%</td>
+            </tr>`;
         }).join('');
         table.innerHTML = `
             <thead>
-                <tr><th>Numara</th><th>Ad Soyad</th><th>Bölüm</th>${weeksHeader}</tr>
+                <tr><th class="freeze-left">Numara</th><th class="freeze-left-2">Ad Soyad</th><th class="freeze-left-3">Bölüm</th>${weeksHeader}</tr>
             </thead>
             <tbody>${rows}</tbody>`;
     }
@@ -353,6 +373,7 @@ function renderInstructor(app){
     renderTable();
 
     document.getElementById('export-excel').onclick = () => exportExcel();
+    document.getElementById('search').oninput = renderTable;
 }
 
 function exportExcel(){
