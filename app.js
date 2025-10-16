@@ -138,10 +138,11 @@ function getRotatingCode(week){
 }
 
 // Validate code allowing slight clock drift: check previous, current, next interval.
-function validateCode(week, code){
+function validateCode(week, code, driftIntervals = 6){
     const seed = getSharedSeed();
     const baseInterval = Math.floor(Date.now() / 30000);
-    for(let d=-1; d<=1; d++){
+    code = (code || '').replace(/\D/g,'');
+    for(let d=-driftIntervals; d<=driftIntervals; d++){
         const interval = baseInterval + d;
         const input = `${seed}:${state.course.id}:${week}:${interval}`;
         let x = 0;
@@ -452,7 +453,7 @@ function renderStudent(app){
             alert('Attendance recorded.');
             navigate('#student'); renderApp();
         } else {
-            alert('Invalid or expired code.');
+            alert('Invalid or expired code. Ensure week matches and your device time is correct.');
         }
     };
 }
