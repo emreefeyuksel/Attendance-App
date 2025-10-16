@@ -105,9 +105,18 @@ if(state.rosterVersion !== 'v1'){
 
 // Deterministic seed that all devices can share. Instructor can rotate it from UI if desired.
 function generateSeed(){
-    // Fixed namespace + course id; users can export/import if needed later
+    // Backward-compat: previously used year-based seed. Kept for migrations.
     const base = 'ENGR4451-SEED-' + new Date().getFullYear();
     // simple hash to number
+    let h = 2166136261;
+    for(let i=0;i<base.length;i++){ h ^= base.charCodeAt(i); h += (h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24); }
+    return Math.abs(h >>> 0);
+}
+
+// From now on, always use a deterministic seed that is identical on every device
+// and cannot be changed from the UI. This prevents cross-device mismatches.
+function getSharedSeed(){
+    const base = `ATTEND:${state.course.id}:2025-v1`;
     let h = 2166136261;
     for(let i=0;i<base.length;i++){ h ^= base.charCodeAt(i); h += (h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24); }
     return Math.abs(h >>> 0);
@@ -116,7 +125,7 @@ function generateSeed(){
 // 6-digit rotating code changing every 30s, also tied to selected week and the shared seed.
 function getRotatingCode(week){
     const interval = Math.floor(Date.now() / 30000); // 30s window
-    const seed = state.codeSeed ?? generateSeed();
+    const seed = getSharedSeed();
     const input = `${seed}:${state.course.id}:${week}:${interval}`;
     let x = 0;
     for(let i=0;i<input.length;i++){
@@ -130,7 +139,7 @@ function getRotatingCode(week){
 
 // Validate code allowing slight clock drift: check previous, current, next interval.
 function validateCode(week, code){
-    const seed = state.codeSeed ?? generateSeed();
+    const seed = getSharedSeed();
     const baseInterval = Math.floor(Date.now() / 30000);
     for(let d=-1; d<=1; d++){
         const interval = baseInterval + d;
@@ -313,9 +322,7 @@ function renderInstructor(app){
     weekSelect.onchange = () => { sessionStorage.setItem('selectedWeek', weekSelect.value); updateCode(); renderTable(); };
 
     document.getElementById('rotate-seed').onclick = () => {
-        state.codeSeed = Math.floor(Math.random()*1e12);
-        saveState(state);
-        updateCode();
+        alert('Codes are now generated from a fixed shared seed for cross-device compatibility. Rotation disabled.');
     };
 
     document.getElementById('clear-att').onclick = () => {
