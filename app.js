@@ -304,7 +304,7 @@ function renderInstructor(app){
             <input id="search" class="input-inline" placeholder="Search name or number" />
         </div>
         <div class="scroll-x">
-            <table class="table compact row hoverable" id="att-table"></table>
+            <table class="table compact hoverable" id="att-table"></table>
         </div>
     </section>`;
 
