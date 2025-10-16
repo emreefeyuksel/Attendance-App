@@ -338,7 +338,7 @@ function renderInstructor(app){
 
     function renderTable(){
         const table = document.getElementById('att-table');
-        const weeksHeader = Array.from({length: state.course.totalWeeks}, (_,i)=> `<th>${i+1}</th>`).join('') + '<th>Toplam</th><th>%</th>';
+        const weeksHeader = Array.from({length: state.course.totalWeeks}, (_,i)=> `<th style=\"min-width:28px\">${i+1}</th>`).join('') + '<th style="min-width:50px">Toplam</th><th style="min-width:40px">%</th>';
         const q = (document.getElementById('search').value || '').toLowerCase();
         const list = Object.values(state.users.students).filter(s=>{
             const hay = `${s.number} ${s.fullName}`.toLowerCase();
