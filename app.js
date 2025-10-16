@@ -121,9 +121,10 @@ function getRotatingCode(week){
     let x = 0;
     for(let i=0;i<input.length;i++){
         x = (x * 31 + input.charCodeAt(i)) >>> 0;
-        x ^= (x << 13) ^ (x >>> 7);
+        x = (x ^ ((x << 13) ^ (x >>> 7))) >>> 0; // keep unsigned
     }
-    const code = (x % 1000000).toString().padStart(6,'0');
+    const codeNum = (x >>> 0) % 1000000; // ensure non-negative
+    const code = String(codeNum).padStart(6,'0');
     return code;
 }
 
@@ -137,9 +138,9 @@ function validateCode(week, code){
         let x = 0;
         for(let i=0;i<input.length;i++){
             x = (x * 31 + input.charCodeAt(i)) >>> 0;
-            x ^= (x << 13) ^ (x >>> 7);
+            x = (x ^ ((x << 13) ^ (x >>> 7))) >>> 0;
         }
-        const expected = (x % 1000000).toString().padStart(6,'0');
+        const expected = String(((x >>> 0) % 1000000)).padStart(6,'0');
         if(expected === code) return true;
     }
     return false;
